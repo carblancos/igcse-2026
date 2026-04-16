@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IGCSE Carlos 2026</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-size: 16px; }
+  body { zoom: 1; }
+
+  :root {
+    --bg: #ffffff;
+    --bg2: #f7f7f5;
+    --bg3: #f1efea;
+    --text: #1a1a18;
+    --text2: #6b6b67;
+    --border: rgba(0,0,0,0.12);
+    --border2: rgba(0,0,0,0.22);
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg3); color: var(--text); min-height: 100vh; font-size: 1rem; }
+
+  header { background: var(--bg); border-bottom: 0.5px solid var(--border2); padding: 1.25rem 1.5rem; }
+  header h1 { font-size: 1.2rem; font-weight: 500; }
+  header p { font-size: 0.875rem; color: var(--text2); margin-top: 2px; }
+
+  .container { max-width: 860px; margin: 0 auto; padding: 1.5rem; }
+
+  .tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .tab { padding: 10px 18px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 0.9rem; cursor: pointer; background: transparent; color: var(--text2); transition: background 0.15s; }
+  .tab:hover { background: var(--bg2); }
+  .tab.active { background: var(--bg); color: var(--text); font-weight: 500; border-color: var(--border2); }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── CALENDAR ── */
+  .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+  .metric { background: var(--bg2); border-radius: var(--radius); padding: 12px; text-align: center; }
+  .metric-val { font-size: 1.5rem; font-weight: 500; }
+  .metric-lbl { font-size: 0.75rem; color: var(--text2); margin-top: 2px; }
+
+  .month-label { font-size: 0.75rem; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.07em; margin: 1.5rem 0 0.5rem; padding-bottom: 4px; border-bottom: 0.5px solid var(--border); }
+
+  .exam-row { display: grid; grid-template-columns: 96px 1fr auto; align-items: start; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+  .exam-date { font-size: 0.875rem; font-weight: 500; color: var(--text2); padding-top: 2px; }
+  .exam-name { font-size: 0.9375rem; font-weight: 500; color: var(--text); line-height: 1.4; }
+  .exam-meta { font-size: 0.8125rem; color: var(--text2); margin-top: 3px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  .exam-block { margin-top: 9px; }
+  .exam-block:first-child { margin-top: 0; }
+
+  .badge { display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: var(--radius); font-weight: 500; }
+  .badge-am { background: #E6F1FB; color: #0C447C; }
+  .badge-pm { background: #EEEDFE; color: #3C3489; }
+  .badge-dur { background: #F1EFE8; color: #444441; }
+
+  .days-left { font-size: 0.8125rem; font-weight: 500; white-space: nowrap; padding-top: 3px; }
+  .days-urgent { color: #A32D2D; }
+  .days-warn { color: #854F0B; }
+  .days-ok { color: #3B6D11; }
+
+  /* ── STUDY PLAN ── */
+  .subject-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 10px; }
+  .subject-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; gap: 8px; }
+  .subject-name { font-size: 0.9375rem; font-weight: 500; }
+  .priority-bar { height: 3px; border-radius: 2px; background: var(--border); margin-bottom: 8px; }
+  .priority-fill { height: 3px; border-radius: 2px; }
+  .ph { background: #E24B4A; } .pm2 { background: #EF9F27; } .pl { background: #639922; }
+  .exam-list { margin: 6px 0 8px; display: flex; flex-direction: column; gap: 5px; }
+  .exam-line { font-size: 0.8125rem; color: var(--text2); display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+  .exam-line-name { font-weight: 500; color: var(--text); }
+  .study-tips { font-size: 0.875rem; color: var(--text2); line-height: 1.6; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .chip { font-size: 0.75rem; padding: 3px 10px; border-radius: 999px; border: 0.5px solid var(--border2); color: var(--text2); }
+
+  /* ── SCHEDULE ── */
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 0.8125rem; color: var(--text2); }
+  .leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  .week-nav { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+  .week-nav button { padding: 8px 16px; font-size: 0.875rem; border: 0.5px solid var(--border2); border-radius: var(--radius); background: transparent; color: var(--text2); cursor: pointer; }
+  .week-nav button:disabled { opacity: 0.3; cursor: default; }
+  .week-label { font-size: 0.9375rem; font-weight: 500; flex: 1; }
+  .week-range { font-size: 0.8125rem; color: var(--text2); }
+
+  .exam-alert { background: #FCEBEB; border: 0.5px solid #F09595; border-radius: var(--radius); padding: 10px 14px; margin-bottom: 10px; font-size: 0.875rem; color: #791F1F; font-weight: 500; }
+  .week-summary { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
+  .sum-chip { font-size: 0.75rem; padding: 3px 10px; border-radius: 999px; border: 0.5px solid var(--border2); color: var(--text2); }
+
+  .day-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 10px; }
+  .day-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+  .day-name { font-size: 0.9375rem; font-weight: 500; }
+  .day-hours { font-size: 0.8125rem; color: var(--text2); }
+  .session-row { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .session-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .session-time { font-size: 0.8125rem; color: var(--text2); min-width: 80px; padding-top: 1px; }
+  .session-subject { font-size: 0.875rem; font-weight: 500; }
+  .session-detail { font-size: 0.8125rem; color: var(--text2); margin-top: 2px; line-height: 1.5; }
+  .sbadge { display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: var(--radius); font-weight: 500; margin-left: 4px; }
+  .b-lit  { background: #EEEDFE; color: #3C3489; }
+  .b-sci  { background: #E1F5EE; color: #085041; }
+  .b-mat  { background: #E6F1FB; color: #0C447C; }
+  .b-cs   { background: #FAEEDA; color: #633806; }
+  .b-eng  { background: #FAECE7; color: #712B13; }
+  .b-esp  { background: #EAF3DE; color: #27500A; }
+  .b-bus  { background: #F1EFE8; color: #444441; }
+  .b-fr   { background: #FBEAF0; color: #72243E; }
+  .b-rest { background: #F1EFE8; color: #5F5E5A; }
+
+  @media (max-width: 600px) {
+    .container { padding: 1rem; }
+    header { padding: 1rem; }
+    .exam-row { grid-template-columns: 1fr auto; gap: 8px; }
+    .exam-date { grid-column: 1 / -1; margin-bottom: 2px; }
+    .session-row { flex-direction: column; gap: 3px; }
+    .session-time { min-width: unset; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>IGCSE Carlos 2026</h1>
+  <p>18 exámenes · 8 asignaturas · 27 abr – 3 jun 2026</p>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('calendar',this)">Calendario</button>
+    <button class="tab" onclick="showTab('study',this)">Plan de estudio</button>
+    <button class="tab" onclick="showTab('schedule',this)">Horario semanal</button>
+  </div>
+
+  <!-- ══════════════════ CALENDAR ══════════════════ -->
+  <div id="calendar" class="panel active">
+    <div class="metrics">
+      <div class="metric"><div class="metric-val">18</div><div class="metric-lbl">exámenes totales</div></div>
+      <div class="metric"><div class="metric-val">38</div><div class="metric-lbl">días hasta el fin</div></div>
+      <div class="metric"><div class="metric-val">8</div><div class="metric-lbl">asignaturas</div></div>
+    </div>
+
+    <div class="month-label">Abril 2026</div>
+    <div class="exam-row">
+      <div class="exam-date">Lun 27 abr</div>
+      <div>
+        <div class="exam-block">
+          <div class="exam-name">Literature in Spanish — Prose and Drama 11</div>
+          <div class="exam-meta">Cambridge IGCSE 0474/11 <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 30m</span></div>
+        </div>
+      </div>
+      <div class="days-left days-urgent">11 días</div>
+    </div>
+
+    <div class="month-label">Mayo 2026</div>
+
+    <div class="exam-row">
+      <div class="exam-date">Lun 4 may</div>
+      <div>
+        <div class="exam-block">
+          <div class="exam-name">Literature in Spanish — Poetry and Unseen 21</div>
+          <div class="exam-meta">Cambridge IGCSE 0474/21 <span class="badge badge-pm">PM</span><span class="badge badge-dur">2h</span></div>
+        </div>
+      </div>
+      <div class="days-left days-urgent">18 días</div>
+    </div>
+
+    <div class="exam-row">
+      <div class="exam-date">Jue 7 may</div>
+      <div>
+        <div class="exam-block">
+          <div class="exam-name">Co-ordinated Sciences (Double Award) — Extended Theory 41</div>
+          <div class="exam-meta">Cambridge IGCSE 0973/41 <span class="badge badge-pm">PM</span><span class="badge badge-dur">2h</span></div>
+        </div>
+      </div>
+      <div class="days-left days-urgent">21 días</div>
+    </div>
+
+    <div class="exam-row">
+      <div class="exam-date">Lun 11 may</div>
+      <div>
+        <div class="exam-block">
+          <div class="exam-name">English Literature — Paper 1</div>
+          <div class="exam-meta">Edexcel GCSE 4ET1 <span class="badge badge-am">AM</span><span class="badge badge-dur">2h</span></div>
+        </div>
+        <div class="exam-block">
+          <div class="exam-name">Business — Paper 1</div>
+          <div class="exam-meta">Edexcel GCSE 4BS1 <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 30m</span></div>
+        </div>
+      </div>
+      <div class="days-left days-warn">25 días</div>
+    </div>
+
+    <div class="exam-row">
+      <div class="exam-date">Mar 12 may</div>
+      <div>
+        <div class="exam-block">
+          <div class="exam-name">Co-ordinated Sciences (Double Award) — Alternative to Practical 61</div>
+          <div class="exam-meta">Cambridge IGCSE 0973/61 <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 30m</span></div>
+        </div>
+      </div>
+      <div class="days-left days-warn">26 días</div>
+    </div>
+
+    <div class="exam-row">
+      <div class="exam-date">Mié 13 may</div>
+      <div>
+        <div class="exam-block">
+          <div class="exam-name">Computer Science — Paper 11 Computer Systems</div>
+          <div class="exam-meta">Cambridge IGCSE 0984/11 <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 45m</span></div>
+        </div>
+      </div>
+      <div class="days-left days-warn">27 días</div>
+    </div>
+
+    <div class="exam-row">
+      <div class="exam-date">Jue 14 may</div>
+      <div>
+        <div class="exam-block">
+          <div class="exam-name">Mathematics A — 1H</div>
+          <div class="exam-meta">Edexcel GCSE 4MA1 <span class="badge badge-am">AM</span><span class="badge badge-dur">2h</span></div>
+        </div>
+      </div>
+      <div class="days-left days-warn">28 días</div>
+    </div>
+
+    <div class="exam-row">
+      <div class="exam-date">Mar 19 may</div>
+      <div>
+        <div class="exam-block">
+          <div class="exam-name">Spanish — Reading 22</div>
+          <div class="exam-meta">Cambridge IGCSE 7160/22 <span class="badge badge-am">AM</span><span class="badge badge-dur">1h</span></div>
+        </div>
+        <div class="exam-block">
+          <div class="exam-name">English Literature — Paper 2</div>
+          <div class="exam-meta">Edexcel GCSE 4ET1 <span class="badge badge-am">AM</span><span class="badge badge-dur">1h 30m</span></div>
+        </div>
+      </div>
+      <div class="days-left days-warn">33 días</div>
+    </div>
+
+    <div class="exam-row">
+      <div class="exam-date">Mié 20 may</div>
+      <div>
+        <div class="exam-block">
+          <div class="exam-name">French — Paper 1 + Paper 2</div>
+          <div class="exam-meta">Edexcel GCSE 4FR1 <span class="badge badge-am">AM</span><span class="badge badge-dur">35m</span><span class="badge badge-dur">1h 45m</span></div>
+        </div>
+        <div class="exam-block">
+          <div class="exam-name">Computer Science — Paper 21 Algorithms, Programming and Logic</div>
+          <div class="exam-meta">Cambridge IGCSE 0984/21 <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 45m</span></div>
+        </div>
+      </div>
+      <div class="days-left days-ok">34 días</div>
+    </div>
+
+    <div class="exam-row">
+      <div class="exam-date">Jue 21 may</div>
+      <div>
+        <div class="exam-block">
+          <div class="exam-name">English Language B — Paper 1</div>
+          <div class="exam-meta">Edexcel GCSE 4EB1 <span class="badge badge-am">AM</span><span class="badge badge-dur">3h</span></div>
+        </div>
+        <div class="exam-block">
+          <div class="exam-name">Spanish — Listening (Multiple Choice) 12 + Writing 42</div>
+          <div class="exam-meta">Cambridge IGCSE 7160/12 <span class="badge badge-am">AM</span><span class="badge badge-dur">50m</span> · 7160/42 <span class="badge badge-am">AM</span><span class="badge badge-dur">1h</span></div>
+        </div>
+        <div class="exam-block">
+          <div class="exam-name">Business — Paper 2</div>
+          <div class="exam-meta">Edexcel GCSE 4BS1 <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 30m</span></div>
+        </div>
+      </div>
+      <div class="days-left days-ok">35 días</div>
+    </div>
+
+    <div class="month-label">Junio 2026</div>
+
+    <div class="exam-row">
+      <div class="exam-date">Mié 3 jun</div>
+      <div>
+        <div class="exam-block">
+          <div class="exam-name">Mathematics A — 2H</div>
+          <div class="exam-meta">Edexcel GCSE 4MA1 <span class="badge badge-am">AM</span><span class="badge badge-dur">2h</span></div>
+        </div>
+        <div class="exam-block">
+          <div class="exam-name">Co-ordinated Sciences (Double Award) — Multiple Choice Extended 21</div>
+          <div class="exam-meta">Cambridge IGCSE 0973/21 <span class="badge badge-pm">PM</span><span class="badge badge-dur">45m</span></div>
+        </div>
+      </div>
+      <div class="days-left days-ok">48 días</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ STUDY PLAN ══════════════════ -->
+  <div id="study" class="panel">
+    <p style="font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.6;">Ordenado por urgencia. <span style="color:#A32D2D;font-weight:500">Alta</span> = empieza ya.</p>
+
+    <div class="subject-card">
+      <div class="subject-header"><span class="subject-name">Literature in Spanish</span></div>
+      <div class="priority-bar"><div class="priority-fill ph" style="width:100%"></div></div>
+      <div class="exam-list">
+        <div class="exam-line"><span class="exam-line-name">Prose and Drama 11</span> — 27 abr <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 30m</span></div>
+        <div class="exam-line"><span class="exam-line-name">Poetry and Unseen 21</span> — 4 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">2h</span></div>
+      </div>
+      <div class="study-tips">Prioridad máxima — Prose and Drama en 11 días. Esta semana: repaso de textos y análisis literario. Semana del 28: Poetry and Unseen.</div>
+      <div class="chips"><span class="chip">Sem 1: Prose and Drama</span><span class="chip">Sem 2: Poetry and Unseen</span><span class="chip">1–2h diarias</span></div>
+    </div>
+
+    <div class="subject-card">
+      <div class="subject-header"><span class="subject-name">Co-ordinated Sciences (Double Award)</span></div>
+      <div class="priority-bar"><div class="priority-fill ph" style="width:90%"></div></div>
+      <div class="exam-list">
+        <div class="exam-line"><span class="exam-line-name">Extended Theory 41</span> — 7 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">2h</span></div>
+        <div class="exam-line"><span class="exam-line-name">Alternative to Practical 61</span> — 12 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 30m</span></div>
+        <div class="exam-line"><span class="exam-line-name">Multiple Choice Extended 21</span> — 3 jun <span class="badge badge-pm">PM</span><span class="badge badge-dur">45m</span></div>
+      </div>
+      <div class="study-tips">Extended Theory requiere repaso amplio. Alternative to Practical más acotada. Multiple Choice en junio tiene más margen.</div>
+      <div class="chips"><span class="chip">Sem 1–2: Extended Theory</span><span class="chip">Sem 3: Alt. to Practical</span><span class="chip">Junio: Multiple Choice</span></div>
+    </div>
+
+    <div class="subject-card">
+      <div class="subject-header"><span class="subject-name">Mathematics A</span></div>
+      <div class="priority-bar"><div class="priority-fill ph" style="width:85%"></div></div>
+      <div class="exam-list">
+        <div class="exam-line"><span class="exam-line-name">1H</span> — 14 may <span class="badge badge-am">AM</span><span class="badge badge-dur">2h</span></div>
+        <div class="exam-line"><span class="exam-line-name">2H</span> — 3 jun <span class="badge badge-am">AM</span><span class="badge badge-dur">2h</span></div>
+      </div>
+      <div class="study-tips">Paper 1H sin calculadora — álgebra, geometría, razonamiento. Paper 2H con calculadora — estadística, trigonometría. Past papers cronometrados.</div>
+      <div class="chips"><span class="chip">Sem 2–3: Paper 1H</span><span class="chip">Sem 4–6: Paper 2H</span></div>
+    </div>
+
+    <div class="subject-card">
+      <div class="subject-header"><span class="subject-name">Computer Science</span></div>
+      <div class="priority-bar"><div class="priority-fill pm2" style="width:70%"></div></div>
+      <div class="exam-list">
+        <div class="exam-line"><span class="exam-line-name">Paper 11 Computer Systems</span> — 13 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 45m</span></div>
+        <div class="exam-line"><span class="exam-line-name">Paper 21 Algorithms, Programming and Logic</span> — 20 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 45m</span></div>
+      </div>
+      <div class="study-tips">Computer Systems primero: arquitectura, redes, seguridad, ética. Después Algorithms, Programming and Logic: pseudocódigo, booleana, depuración.</div>
+      <div class="chips"><span class="chip">Sem 2: Computer Systems</span><span class="chip">Sem 3–4: Algorithms</span></div>
+    </div>
+
+    <div class="subject-card">
+      <div class="subject-header"><span class="subject-name">English Literature + English Language B</span></div>
+      <div class="priority-bar"><div class="priority-fill pm2" style="width:65%"></div></div>
+      <div class="exam-list">
+        <div class="exam-line"><span class="exam-line-name">English Literature — Paper 1</span> — 11 may <span class="badge badge-am">AM</span><span class="badge badge-dur">2h</span></div>
+        <div class="exam-line"><span class="exam-line-name">English Literature — Paper 2</span> — 19 may <span class="badge badge-am">AM</span><span class="badge badge-dur">1h 30m</span></div>
+        <div class="exam-line"><span class="exam-line-name">English Language B — Paper 1</span> — 21 may <span class="badge badge-am">AM</span><span class="badge badge-dur">3h</span></div>
+      </div>
+      <div class="study-tips">Literature Paper 1 primero. Language B el 21 dura 3h — practica escritura extendida. Literature Paper 2 repasa textos comparativos.</div>
+      <div class="chips"><span class="chip">Sem 2: Lit Paper 1</span><span class="chip">Sem 3: Language B</span><span class="chip">Sem 4: Lit Paper 2</span></div>
+    </div>
+
+    <div class="subject-card">
+      <div class="subject-header"><span class="subject-name">Spanish</span></div>
+      <div class="priority-bar"><div class="priority-fill pm2" style="width:55%"></div></div>
+      <div class="exam-list">
+        <div class="exam-line"><span class="exam-line-name">Reading 22</span> — 19 may <span class="badge badge-am">AM</span><span class="badge badge-dur">1h</span></div>
+        <div class="exam-line"><span class="exam-line-name">Listening (Multiple Choice) 12</span> — 21 may <span class="badge badge-am">AM</span><span class="badge badge-dur">50m</span></div>
+        <div class="exam-line"><span class="exam-line-name">Writing 42</span> — 21 may <span class="badge badge-am">AM</span><span class="badge badge-dur">1h</span></div>
+      </div>
+      <div class="study-tips">Reading el 19, Listening y Writing el 21 (ambos AM). Practica comprensión auditiva con grabaciones y redacción cronometrada.</div>
+      <div class="chips"><span class="chip">Sem 3: Reading</span><span class="chip">Sem 4: Listening + Writing</span></div>
+    </div>
+
+    <div class="subject-card">
+      <div class="subject-header"><span class="subject-name">Business</span></div>
+      <div class="priority-bar"><div class="priority-fill pl" style="width:40%"></div></div>
+      <div class="exam-list">
+        <div class="exam-line"><span class="exam-line-name">Paper 1</span> — 11 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 30m</span></div>
+        <div class="exam-line"><span class="exam-line-name">Paper 2</span> — 21 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 30m</span></div>
+      </div>
+      <div class="study-tips">Ambos papers en sesión PM. Repasa conceptos de marketing, finanzas y operaciones. Estructura respuestas con casos prácticos.</div>
+      <div class="chips"><span class="chip">Sem 2: Paper 1</span><span class="chip">Sem 4: Paper 2</span></div>
+    </div>
+
+    <div class="subject-card">
+      <div class="subject-header"><span class="subject-name">French</span></div>
+      <div class="priority-bar"><div class="priority-fill pl" style="width:30%"></div></div>
+      <div class="exam-list">
+        <div class="exam-line"><span class="exam-line-name">Paper 1</span> — 20 may <span class="badge badge-am">AM</span><span class="badge badge-dur">35m</span></div>
+        <div class="exam-line"><span class="exam-line-name">Paper 2</span> — 20 may <span class="badge badge-am">AM</span><span class="badge badge-dur">1h 45m</span></div>
+      </div>
+      <div class="study-tips">Ambos papers el mismo día en AM. Paper 1 muy corto (35m), Paper 2 más extenso. Vocabulario temático y gramática en semanas 3–4.</div>
+      <div class="chips"><span class="chip">Sem 3–4: Repaso intensivo</span></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ SCHEDULE ══════════════════ -->
+  <div id="schedule" class="panel">
+    <div class="legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#AFA9EC"></div>Lit. in Spanish</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#5DCAA5"></div>Co-ord. Sciences</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#85B7EB"></div>Mathematics A</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#EF9F27"></div>Computer Science</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#F0997B"></div>English</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#97C459"></div>Spanish</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#B4B2A9"></div>Business</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#ED93B1"></div>French</div>
+    </div>
+
+    <div class="week-nav">
+      <button id="btn-prev" onclick="changeWeek(-1)" disabled>&#8592;</button>
+      <div>
+        <div class="week-label" id="week-label">Semana 1</div>
+        <div class="week-range" id="week-range"></div>
+      </div>
+      <button id="btn-next" onclick="changeWeek(1)">&#8594;</button>
+    </div>
+
+    <div id="exam-alert" class="exam-alert" style="display:none"></div>
+    <div class="week-summary" id="week-summary"></div>
+    <div id="week-content"></div>
+  </div>
+</div>
+
+<script>
+function showTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+const weeks = [
+  { label:"Semana 1", range:"16 – 20 abr", focus:"Literature in Spanish (urgente) + Sciences", exams:[],
+    days:[
+      { name:"Miércoles 16 abr", hours:"2h 30m", sessions:[
+        { time:"Mañana", subject:"Literature in Spanish", badge:"b-lit", detail:"Repaso Prose and Drama — personajes, temas, técnicas narrativas. Anota argumentos clave." },
+        { time:"Tarde", subject:"Co-ordinated Sciences", badge:"b-sci", detail:"Extended Theory: Biology — sistemas del cuerpo humano y procesos celulares." }
+      ]},
+      { name:"Jueves 17 abr", hours:"2h 30m", sessions:[
+        { time:"Mañana", subject:"Literature in Spanish", badge:"b-lit", detail:"Prose and Drama — preguntas de análisis de past papers. Practica respuestas estructuradas." },
+        { time:"Tarde", subject:"Co-ordinated Sciences", badge:"b-sci", detail:"Extended Theory: Chemistry — enlaces, reacciones y tabla periódica." }
+      ]},
+      { name:"Viernes 18 abr", hours:"2h", sessions:[
+        { time:"Mañana", subject:"Literature in Spanish", badge:"b-lit", detail:"Repaso final Prose and Drama — ensayo de práctica completo cronometrado (1h 30m)." },
+        { time:"Tarde", subject:"Mathematics A", badge:"b-mat", detail:"Álgebra: ecuaciones, factorización, expresiones. 30 min de ejercicios." }
+      ]},
+      { name:"Sábado 19 abr", hours:"3h", sessions:[
+        { time:"Mañana", subject:"Literature in Spanish", badge:"b-lit", detail:"Poetry and Unseen — introducción a los poemas del programa. Técnicas poéticas." },
+        { time:"Tarde", subject:"Co-ordinated Sciences", badge:"b-sci", detail:"Extended Theory: Physics — fuerzas, energía, ondas. Past paper de sección corta." }
+      ]},
+      { name:"Domingo 20 abr", hours:"2h", sessions:[
+        { time:"Mañana", subject:"Literature in Spanish", badge:"b-lit", detail:"Poetry and Unseen — análisis de poemas no vistos. Práctica de respuesta en tiempo real." },
+        { time:"Tarde", subject:"Descanso", badge:"b-rest", detail:"Descanso activo. Repasa notas en 15 min si es necesario." }
+      ]}
+    ]
+  },
+  { label:"Semana 2", range:"21 – 26 abr", focus:"Literature in Spanish (examen el 27) + Sciences + Maths",
+    exams:["Lun 27 abr — Literature in Spanish: Prose and Drama 11 (PM, 1h 30m)"],
+    days:[
+      { name:"Lunes 21 abr", hours:"2h 30m", sessions:[
+        { time:"Mañana", subject:"Literature in Spanish", badge:"b-lit", detail:"Poetry and Unseen — simulacro completo cronometrado (2h). Condiciones de examen." },
+        { time:"Tarde", subject:"Mathematics A", badge:"b-mat", detail:"Geometría y trigonometría — ángulos, Pitágoras, razones trigonométricas." }
+      ]},
+      { name:"Martes 22 abr", hours:"2h 30m", sessions:[
+        { time:"Mañana", subject:"Co-ordinated Sciences", badge:"b-sci", detail:"Extended Theory — past paper completo (2h) cronometrado. Identifica puntos débiles." },
+        { time:"Tarde", subject:"Literature in Spanish", badge:"b-lit", detail:"Repaso rápido Prose and Drama — notas clave, citas importantes y estructura." }
+      ]},
+      { name:"Miércoles 23 abr", hours:"2h", sessions:[
+        { time:"Mañana", subject:"Literature in Spanish", badge:"b-lit", detail:"Corrección del ensayo. Mejora argumentación y estilo." },
+        { time:"Tarde", subject:"Mathematics A", badge:"b-mat", detail:"Estadística y probabilidad — diagramas, media, moda, rango." }
+      ]},
+      { name:"Jueves 24 abr", hours:"2h", sessions:[
+        { time:"Mañana", subject:"Literature in Spanish", badge:"b-lit", detail:"Repaso intensivo Prose and Drama — citas clave, personajes y estructura del examen." },
+        { time:"Tarde", subject:"Co-ordinated Sciences", badge:"b-sci", detail:"Alternative to Practical — introducción a preguntas de tipo experimental." }
+      ]},
+      { name:"Viernes 25 abr", hours:"1h 30m", sessions:[
+        { time:"Mañana", subject:"Literature in Spanish", badge:"b-lit", detail:"Repaso ligero — solo leer notas y citas. Sin escribir ensayos. Descansa la tarde." }
+      ]},
+      { name:"Sábado 26 abr", hours:"1h", sessions:[
+        { time:"Mañana", subject:"Literature in Spanish", badge:"b-lit", detail:"Repaso final muy ligero — citas clave y estructura del ensayo. Nada nuevo. Duerme bien." }
+      ]}
+    ]
+  },
+  { label:"Semana 3", range:"28 abr – 3 may", focus:"Literature in Spanish (examen el 4) + Sciences + Maths",
+    exams:["Lun 4 may — Literature in Spanish: Poetry and Unseen 21 (PM, 2h)"],
+    days:[
+      { name:"Martes 28 abr", hours:"2h 30m", sessions:[
+        { time:"Mañana", subject:"Literature in Spanish", badge:"b-lit", detail:"Poetry and Unseen — repaso de poemas del programa. Técnicas y análisis." },
+        { time:"Tarde", subject:"Co-ordinated Sciences", badge:"b-sci", detail:"Extended Theory — repaso Biology: fotosíntesis, genética, ecosistemas." }
+      ]},
+      { name:"Miércoles 29 abr", hours:"2h 30m", sessions:[
+        { time:"Mañana", subject:"Literature in Spanish", badge:"b-lit", detail:"Unseen poetry — práctica con poemas nuevos. Respuestas cronometradas." },
+        { time:"Tarde", subject:"Mathematics A", badge:"b-mat", detail:"Números — fracciones, porcentajes, razones, proporciones. Past paper sección." }
+      ]},
+      { name:"Jueves 30 abr", hours:"2h", sessions:[
+        { time:"Mañana", subject:"Literature in Spanish", badge:"b-lit", detail:"Past paper Poetry completo — repaso de errores cometidos anteriormente." },
+        { time:"Tarde", subject:"Co-ordinated Sciences", badge:"b-sci", detail:"Extended Theory — repaso Physics: electricidad, magnetismo, radiación." }
+      ]},
+      { name:"Viernes 1 may", hours:"2h", sessions:[
+        { time:"Mañana", subject:"Literature in Spanish", badge:"b-lit", detail:"Simulacro completo Poetry and Unseen (2h). Condiciones de examen." },
+        { time:"Tarde", subject:"Computer Science", badge:"b-cs", detail:"Computer Systems — arquitectura del procesador, memoria, dispositivos." }
+      ]},
+      { name:"Sábado 2 may", hours:"1h 30m", sessions:[
+        { time:"Mañana", subject:"Literature in Spanish", badge:"b-lit", detail:"Corrección simulacro + repaso final ligero. Notas clave y citas." }
+      ]},
+      { name:"Domingo 3 may", hours:"1h", sessions:[
+        { time:"Mañana", subject:"Literature in Spanish", badge:"b-lit", detail:"Solo leer notas — nada de escribir. Descansa. Examen mañana PM." }
+      ]}
+    ]
+  },
+  { label:"Semana 4", range:"4 – 10 may", focus:"Co-ord. Sciences + Maths + Computer Science",
+    exams:["Jue 7 may — Co-ord. Sciences: Extended Theory 41 (PM, 2h)","Lun 11 may — English Literature: Paper 1 (AM, 2h) + Business: Paper 1 (PM, 1h 30m)"],
+    days:[
+      { name:"Lunes 4 may", hours:"—", sessions:[
+        { time:"Todo el día", subject:"EXAMEN: Literature in Spanish Poetry and Unseen", badge:"b-lit", detail:"Examen PM. Mañana libre — descansa y repasa notas de Sciences para el jueves." }
+      ]},
+      { name:"Martes 5 may", hours:"3h", sessions:[
+        { time:"Mañana", subject:"Co-ordinated Sciences", badge:"b-sci", detail:"Repaso final Extended Theory — past paper completo cronometrado (2h)." },
+        { time:"Tarde", subject:"Mathematics A", badge:"b-mat", detail:"Paper 1H — álgebra, geometría. Ejercicios sin calculadora." }
+      ]},
+      { name:"Miércoles 6 may", hours:"2h 30m", sessions:[
+        { time:"Mañana", subject:"Co-ordinated Sciences", badge:"b-sci", detail:"Repaso ligero — respuestas del simulacro. Solo notas clave. Examen mañana." },
+        { time:"Tarde", subject:"English Literature", badge:"b-eng", detail:"Paper 1 — introducción a textos. Repasa preguntas tipo y estructura de respuesta." }
+      ]},
+      { name:"Jueves 7 may", hours:"—", sessions:[
+        { time:"Todo el día", subject:"EXAMEN: Co-ord. Sciences Extended Theory 41", badge:"b-sci", detail:"Examen PM. Mañana: repaso ligero de notas. Tarde libre tras el examen." }
+      ]},
+      { name:"Viernes 8 may", hours:"3h", sessions:[
+        { time:"Mañana", subject:"English Literature", badge:"b-eng", detail:"Paper 1 — past papers. Practica preguntas de comprensión y análisis literario." },
+        { time:"Tarde", subject:"Business", badge:"b-bus", detail:"Paper 1 — repasa conceptos: demanda, oferta, marketing mix, tipos de empresa." }
+      ]},
+      { name:"Sábado 9 may", hours:"3h", sessions:[
+        { time:"Mañana", subject:"English Literature", badge:"b-eng", detail:"Simulacro Paper 1 completo (2h). Condiciones de examen." },
+        { time:"Tarde", subject:"Business", badge:"b-bus", detail:"Paper 1 — respuestas estructuradas. Practica casos prácticos cortos." }
+      ]},
+      { name:"Domingo 10 may", hours:"2h", sessions:[
+        { time:"Mañana", subject:"English Literature", badge:"b-eng", detail:"Repaso final Paper 1 — notas clave. Examen mañana AM." },
+        { time:"Tarde", subject:"Business", badge:"b-bus", detail:"Repaso final Paper 1 — conceptos clave. Examen mañana PM." }
+      ]}
+    ]
+  },
+  { label:"Semana 5", range:"11 – 17 may", focus:"Computer Science + Maths + English + Sciences (Alt. Practical)",
+    exams:["Lun 11 may — English Literature Paper 1 (AM, 2h) + Business Paper 1 (PM, 1h 30m)","Mar 12 may — Co-ord. Sciences: Alternative to Practical 61 (PM, 1h 30m)","Mié 13 may — Computer Science: Paper 11 Computer Systems (PM, 1h 45m)","Jue 14 may — Mathematics A: 1H (AM, 2h)"],
+    days:[
+      { name:"Lunes 11 may", hours:"—", sessions:[
+        { time:"Todo el día", subject:"EXAMEN: English Literature P1 (AM) + Business P1 (PM)", badge:"b-eng", detail:"Dos exámenes. Noche anterior: repaso muy ligero de Alternative to Practical." }
+      ]},
+      { name:"Martes 12 may", hours:"—", sessions:[
+        { time:"Todo el día", subject:"EXAMEN: Co-ord. Sciences Alternative to Practical 61", badge:"b-sci", detail:"Examen PM. Mañana: repaso rápido de Computer Systems (1h) para mañana." }
+      ]},
+      { name:"Miércoles 13 may", hours:"—", sessions:[
+        { time:"Todo el día", subject:"EXAMEN: Computer Science Paper 11 Computer Systems", badge:"b-cs", detail:"Examen PM. Mañana: repaso rápido Maths Paper 1H — fórmulas clave sin calculadora." }
+      ]},
+      { name:"Jueves 14 may", hours:"—", sessions:[
+        { time:"Todo el día", subject:"EXAMEN: Mathematics A 1H", badge:"b-mat", detail:"Examen AM. Tarde libre — descansa." }
+      ]},
+      { name:"Viernes 15 may", hours:"2h 30m", sessions:[
+        { time:"Mañana", subject:"Computer Science", badge:"b-cs", detail:"Algorithms, Programming and Logic — pseudocódigo, tipos de datos, estructuras." },
+        { time:"Tarde", subject:"English Literature", badge:"b-eng", detail:"Paper 2 — introducción a textos comparativos. Estructura de respuesta." }
+      ]},
+      { name:"Sábado 16 may", hours:"3h", sessions:[
+        { time:"Mañana", subject:"Computer Science", badge:"b-cs", detail:"Algorithms — lógica booleana, puertas lógicas, diagramas de flujo. Past paper sección." },
+        { time:"Tarde", subject:"Spanish", badge:"b-esp", detail:"Reading 22 — vocabulario temático, comprensión de textos. Past papers." }
+      ]},
+      { name:"Domingo 17 may", hours:"2h 30m", sessions:[
+        { time:"Mañana", subject:"Computer Science", badge:"b-cs", detail:"Simulacro Paper 21 completo (1h 45m). Condiciones de examen." },
+        { time:"Tarde", subject:"English Literature", badge:"b-eng", detail:"Paper 2 — past papers. Practica análisis comparativo." }
+      ]}
+    ]
+  },
+  { label:"Semana 6", range:"18 – 24 may", focus:"Spanish + English Language B + Business P2 + French",
+    exams:["Mar 19 may — Spanish Reading 22 (AM, 1h) + English Literature Paper 2 (AM, 1h 30m)","Mié 20 may — French Paper 1 (AM, 35m) + Paper 2 (AM, 1h 45m) + CS Algorithms (PM, 1h 45m)","Jue 21 may — English Language B (AM, 3h) + Spanish Listening+Writing (AM) + Business P2 (PM, 1h 30m)"],
+    days:[
+      { name:"Lunes 18 may", hours:"2h 30m", sessions:[
+        { time:"Mañana", subject:"Spanish", badge:"b-esp", detail:"Repaso final Reading — comprensión de textos. Examen mañana AM." },
+        { time:"Tarde", subject:"English Literature", badge:"b-eng", detail:"Repaso final Paper 2 — estructura de ensayo comparativo. Examen mañana AM." }
+      ]},
+      { name:"Martes 19 may", hours:"—", sessions:[
+        { time:"Todo el día", subject:"EXAMEN: Spanish Reading 22 + English Literature Paper 2", badge:"b-esp", detail:"Dos exámenes AM. Tarde: repaso rápido French (vocabulario) y CS Algorithms." }
+      ]},
+      { name:"Miércoles 20 may", hours:"—", sessions:[
+        { time:"Todo el día", subject:"EXAMEN: French P1+P2 (AM) + CS Algorithms PM", badge:"b-fr", detail:"Tres papers. Tarde tras examen: repaso Spanish Listening + repaso English Language B." }
+      ]},
+      { name:"Jueves 21 may", hours:"—", sessions:[
+        { time:"Todo el día", subject:"EXAMEN: English Lang B + Spanish Listen/Write + Business P2", badge:"b-eng", detail:"Día más cargado — cuatro papers. Descansa el resto del día." }
+      ]},
+      { name:"Viernes 22 may", hours:"2h", sessions:[
+        { time:"Mañana", subject:"Mathematics A", badge:"b-mat", detail:"Paper 2H con calculadora — trigonometría, vectores, cálculo. Past paper sección." },
+        { time:"Tarde", subject:"Descanso", badge:"b-rest", detail:"Semana muy intensa. Descansa bien." }
+      ]},
+      { name:"Sábado 23 may", hours:"2h", sessions:[
+        { time:"Mañana", subject:"Mathematics A", badge:"b-mat", detail:"Paper 2H — estadística avanzada, probabilidad, gráficas. Ejercicios con calculadora." }
+      ]},
+      { name:"Domingo 24 may", hours:"2h", sessions:[
+        { time:"Mañana", subject:"Mathematics A", badge:"b-mat", detail:"Simulacro Paper 2H completo (2h). Condiciones de examen." }
+      ]}
+    ]
+  },
+  { label:"Semana 7", range:"25 – 31 may", focus:"Mathematics A (Paper 2H) + Sciences Multiple Choice", exams:[],
+    days:[
+      { name:"Lunes 25 may", hours:"2h 30m", sessions:[
+        { time:"Mañana", subject:"Mathematics A", badge:"b-mat", detail:"Corrección simulacro + repaso de errores. Puntos débiles Paper 2H." },
+        { time:"Tarde", subject:"Co-ordinated Sciences", badge:"b-sci", detail:"Multiple Choice Extended — repaso rápido de conceptos con tarjetas." }
+      ]},
+      { name:"Martes 26 may", hours:"2h 30m", sessions:[
+        { time:"Mañana", subject:"Mathematics A", badge:"b-mat", detail:"Past paper Paper 2H — sección de álgebra avanzada y funciones." },
+        { time:"Tarde", subject:"Co-ordinated Sciences", badge:"b-sci", detail:"Multiple Choice — past papers de tipo test. Velocidad y precisión." }
+      ]},
+      { name:"Miércoles 27 may", hours:"2h 30m", sessions:[
+        { time:"Mañana", subject:"Mathematics A", badge:"b-mat", detail:"Past paper Paper 2H — geometría analítica, transformaciones, pruebas." },
+        { time:"Tarde", subject:"Co-ordinated Sciences", badge:"b-sci", detail:"Multiple Choice — repaso final con énfasis en errores frecuentes." }
+      ]},
+      { name:"Jueves 28 may", hours:"2h", sessions:[
+        { time:"Mañana", subject:"Mathematics A", badge:"b-mat", detail:"Simulacro Paper 2H completo (2h). Últimas condiciones de examen." }
+      ]},
+      { name:"Viernes 29 may", hours:"2h", sessions:[
+        { time:"Mañana", subject:"Mathematics A", badge:"b-mat", detail:"Corrección simulacro. Repaso de fórmulas clave. Examen el miércoles." },
+        { time:"Tarde", subject:"Co-ordinated Sciences", badge:"b-sci", detail:"Repaso final Multiple Choice. Repasa diagramas y definiciones clave." }
+      ]},
+      { name:"Sábado 30 may", hours:"1h", sessions:[
+        { time:"Mañana", subject:"Mathematics A", badge:"b-mat", detail:"Repaso ligero — fórmulas y estrategia. Nada nuevo." }
+      ]},
+      { name:"Domingo 31 may", hours:"1h", sessions:[
+        { time:"Mañana", subject:"Repaso general", badge:"b-rest", detail:"Solo notas clave de Maths y Sciences. Descansa bien. Exámenes el miércoles." }
+      ]}
+    ]
+  },
+  { label:"Semana 8", range:"1 – 3 jun", focus:"Últimos exámenes: Mathematics A 2H + Sciences Multiple Choice",
+    exams:["Mié 3 jun — Mathematics A: 2H (AM, 2h) + Co-ord. Sciences: Multiple Choice Extended 21 (PM, 45m)"],
+    days:[
+      { name:"Lunes 1 jun", hours:"2h", sessions:[
+        { time:"Mañana", subject:"Mathematics A", badge:"b-mat", detail:"Repaso final Paper 2H — fórmulas, estrategia, gestión del tiempo." },
+        { time:"Tarde", subject:"Co-ordinated Sciences", badge:"b-sci", detail:"Multiple Choice — repaso rápido tipo test. 30 preguntas cronometradas." }
+      ]},
+      { name:"Martes 2 jun", hours:"1h 30m", sessions:[
+        { time:"Mañana", subject:"Mathematics A", badge:"b-mat", detail:"Solo leer notas y fórmulas. Nada de ejercicios largos. Descansa la tarde." },
+        { time:"Tarde", subject:"Co-ordinated Sciences", badge:"b-sci", detail:"Repaso muy ligero — 20 min de notas clave. Duerme bien." }
+      ]},
+      { name:"Miércoles 3 jun", hours:"—", sessions:[
+        { time:"Todo el día", subject:"EXAMEN: Mathematics A 2H (AM) + Sciences MC (PM)", badge:"b-mat", detail:"Último día de exámenes. ¡Bien merecido descanso después!" }
+      ]}
+    ]
+  }
+];
+
+let currentWeek = 0;
+
+const badgeLabels = { 'b-lit':'Lit','b-sci':'Sci','b-mat':'Maths','b-cs':'CS','b-eng':'English','b-esp':'Spanish','b-bus':'Business','b-fr':'French','b-rest':'—' };
+
+function renderWeek() {
+  const w = weeks[currentWeek];
+  document.getElementById('week-label').textContent = w.label;
+  document.getElementById('week-range').textContent = w.range;
+  document.getElementById('btn-prev').disabled = currentWeek === 0;
+  document.getElementById('btn-next').disabled = currentWeek === weeks.length - 1;
+  const alert = document.getElementById('exam-alert');
+  if (w.exams.length > 0) {
+    alert.style.display = 'block';
+    alert.innerHTML = w.exams.map(e => 'Examen: ' + e).join('<br>');
+  } else { alert.style.display = 'none'; }
+  document.getElementById('week-summary').innerHTML = '<span class="sum-chip">Foco: ' + w.focus + '</span>';
+  document.getElementById('week-content').innerHTML = w.days.map(day =>
+    '<div class="day-card"><div class="day-header"><span class="day-name">' + day.name + '</span><span class="day-hours">' + day.hours + '</span></div>' +
+    day.sessions.map(s =>
+      '<div class="session-row"><div class="session-time">' + s.time + '</div><div class="session-content"><div class="session-subject">' + s.subject +
+      '<span class="sbadge ' + s.badge + '">' + (badgeLabels[s.badge] || '') + '</span></div><div class="session-detail">' + s.detail + '</div></div></div>'
+    ).join('') + '</div>'
+  ).join('');
+}
+
+function changeWeek(dir) {
+  currentWeek = Math.max(0, Math.min(weeks.length - 1, currentWeek + dir));
+  renderWeek();
+}
+
+renderWeek();
+</script>
+</body>
+</html>
