@@ -119,21 +119,20 @@
     .exam-date { grid-column: 1 / -1; margin-bottom: 2px; }
     .session-row { flex-direction: column; gap: 3px; }
     .session-time { min-width: unset; }
-    .cal-grid { gap: 3px; }
-    .cal-cell { min-height: 64px; padding: 4px; }
-    .cal-day-num { font-size: 0.75rem; }
-    .cal-event { font-size: 0.6rem; padding: 1px 4px; }
-    .cal-header-cell { font-size: 0.7rem; padding: 4px 2px; }
+    .cal-grid { gap: 2px; }
+    .cal-cell { min-height: 56px; padding: 3px; }
+    .cal-header-cell { font-size: 0.65rem; padding: 4px 1px; }
+    .cal-day-num { font-size: 0.7rem; }
+    .cal-event { font-size: 0.55rem; padding: 1px 3px; }
   }
 
   /* ── MONTHLY CALENDAR ── */
   .cal-month-label { font-size: 1rem; font-weight: 500; margin: 1.5rem 0 0.75rem; }
   .cal-month-label:first-child { margin-top: 0; }
-  .cal-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-bottom: 3px; }
-  .cal-header-cell { text-align: center; font-size: 0.75rem; font-weight: 500; color: var(--text2); padding: 6px 2px; }
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-bottom: 1.5rem; }
-  .cal-cell { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); min-height: 80px; padding: 6px; vertical-align: top; }
-  .cal-cell.empty { background: var(--bg2); border-color: transparent; }
+  .cal-header-cell { text-align: center; font-size: 0.75rem; font-weight: 500; color: var(--text2); padding: 6px 2px; background: var(--bg2); border-radius: var(--radius); }
+  .cal-cell { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); min-height: 80px; padding: 6px; }
+  .cal-cell.empty { background: var(--bg2); border-color: transparent; min-height: 80px; }
   .cal-cell.has-exam { border-color: var(--border2); }
   .cal-cell.today { border-color: #378ADD; border-width: 1.5px; }
   .cal-day-num { font-size: 0.8125rem; font-weight: 500; color: var(--text2); margin-bottom: 4px; }
@@ -762,8 +761,9 @@ function renderMonthly() {
     startDow = startDow === 0 ? 6 : startDow - 1;
 
     html += '<div class="cal-month-label">' + name + '</div>';
-    html += '<div class="cal-header">' + days.map(d => '<div class="cal-header-cell">' + d + '</div>').join('') + '</div>';
     html += '<div class="cal-grid">';
+
+    days.forEach(d => { html += '<div class="cal-header-cell">' + d + '</div>'; });
 
     for (let i = 0; i < startDow; i++) html += '<div class="cal-cell empty"></div>';
 
