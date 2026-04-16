@@ -119,7 +119,35 @@
     .exam-date { grid-column: 1 / -1; margin-bottom: 2px; }
     .session-row { flex-direction: column; gap: 3px; }
     .session-time { min-width: unset; }
+    .cal-grid { gap: 3px; }
+    .cal-cell { min-height: 64px; padding: 4px; }
+    .cal-day-num { font-size: 0.75rem; }
+    .cal-event { font-size: 0.6rem; padding: 1px 4px; }
+    .cal-header-cell { font-size: 0.7rem; padding: 4px 2px; }
   }
+
+  /* ── MONTHLY CALENDAR ── */
+  .cal-month-label { font-size: 1rem; font-weight: 500; margin: 1.5rem 0 0.75rem; }
+  .cal-month-label:first-child { margin-top: 0; }
+  .cal-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-bottom: 3px; }
+  .cal-header-cell { text-align: center; font-size: 0.75rem; font-weight: 500; color: var(--text2); padding: 6px 2px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-bottom: 1.5rem; }
+  .cal-cell { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); min-height: 80px; padding: 6px; vertical-align: top; }
+  .cal-cell.empty { background: var(--bg2); border-color: transparent; }
+  .cal-cell.has-exam { border-color: var(--border2); }
+  .cal-cell.today { border-color: #378ADD; border-width: 1.5px; }
+  .cal-day-num { font-size: 0.8125rem; font-weight: 500; color: var(--text2); margin-bottom: 4px; }
+  .cal-cell.today .cal-day-num { color: #185FA5; }
+  .cal-events { display: flex; flex-direction: column; gap: 2px; }
+  .cal-event { font-size: 0.6875rem; font-weight: 500; padding: 2px 5px; border-radius: 4px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ce-lit  { background: #EEEDFE; color: #3C3489; }
+  .ce-sci  { background: #E1F5EE; color: #085041; }
+  .ce-mat  { background: #E6F1FB; color: #0C447C; }
+  .ce-cs   { background: #FAEEDA; color: #633806; }
+  .ce-eng  { background: #FAECE7; color: #712B13; }
+  .ce-esp  { background: #EAF3DE; color: #27500A; }
+  .ce-bus  { background: #F1EFE8; color: #444441; }
+  .ce-fr   { background: #FBEAF0; color: #72243E; }
 </style>
 </head>
 <body>
@@ -134,6 +162,7 @@
     <button class="tab active" onclick="showTab('calendar',this)">Calendario</button>
     <button class="tab" onclick="showTab('study',this)">Plan de estudio</button>
     <button class="tab" onclick="showTab('schedule',this)">Horario semanal</button>
+    <button class="tab" onclick="showTab('monthly',this)">Horario mensual</button>
   </div>
 
   <!-- ══════════════════ CALENDAR ══════════════════ -->
@@ -417,6 +446,21 @@
     <div class="week-summary" id="week-summary"></div>
     <div id="week-content"></div>
   </div>
+
+  <!-- ══════════════════ MONTHLY ══════════════════ -->
+  <div id="monthly" class="panel">
+    <div class="legend" style="margin-bottom:1.25rem">
+      <div class="leg-item"><div class="leg-dot" style="background:#AFA9EC"></div>Lit. in Spanish</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#5DCAA5"></div>Co-ord. Sciences</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#85B7EB"></div>Mathematics A</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#EF9F27"></div>Computer Science</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#F0997B"></div>English</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#97C459"></div>Spanish</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#B4B2A9"></div>Business</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#ED93B1"></div>French</div>
+    </div>
+    <div id="monthly-content"></div>
+  </div>
 </div>
 
 <script>
@@ -670,6 +714,93 @@ function changeWeek(dir) {
   currentWeek = Math.max(0, Math.min(weeks.length - 1, currentWeek + dir));
   renderWeek();
 }
+
+const examEvents = {
+  '2026-04-27': [{ label:'Lit. Spanish — Prose and Drama', cls:'ce-lit', sess:'PM' }],
+  '2026-05-04': [{ label:'Lit. Spanish — Poetry and Unseen', cls:'ce-lit', sess:'PM' }],
+  '2026-05-07': [{ label:'Sciences — Extended Theory', cls:'ce-sci', sess:'PM' }],
+  '2026-05-11': [
+    { label:'English Literature P1', cls:'ce-eng', sess:'AM' },
+    { label:'Business P1', cls:'ce-bus', sess:'PM' }
+  ],
+  '2026-05-12': [{ label:'Sciences — Alt. to Practical', cls:'ce-sci', sess:'PM' }],
+  '2026-05-13': [{ label:'Computer Science — Systems', cls:'ce-cs', sess:'PM' }],
+  '2026-05-14': [{ label:'Mathematics A — 1H', cls:'ce-mat', sess:'AM' }],
+  '2026-05-19': [
+    { label:'Spanish — Reading', cls:'ce-esp', sess:'AM' },
+    { label:'English Literature P2', cls:'ce-eng', sess:'AM' }
+  ],
+  '2026-05-20': [
+    { label:'French P1 + P2', cls:'ce-fr', sess:'AM' },
+    { label:'Computer Science — Algorithms', cls:'ce-cs', sess:'PM' }
+  ],
+  '2026-05-21': [
+    { label:'English Language B', cls:'ce-eng', sess:'AM' },
+    { label:'Spanish Listen + Write', cls:'ce-esp', sess:'AM' },
+    { label:'Business P2', cls:'ce-bus', sess:'PM' }
+  ],
+  '2026-06-03': [
+    { label:'Mathematics A — 2H', cls:'ce-mat', sess:'AM' },
+    { label:'Sciences — Multiple Choice', cls:'ce-sci', sess:'PM' }
+  ]
+};
+
+function renderMonthly() {
+  const months = [
+    { year: 2026, month: 3, name: 'Abril 2026' },
+    { year: 2026, month: 4, name: 'Mayo 2026' },
+    { year: 2026, month: 5, name: 'Junio 2026' }
+  ];
+  const days = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  const today = new Date();
+  let html = '';
+
+  months.forEach(({ year, month, name }) => {
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    let startDow = firstDay.getDay();
+    startDow = startDow === 0 ? 6 : startDow - 1;
+
+    html += '<div class="cal-month-label">' + name + '</div>';
+    html += '<div class="cal-header">' + days.map(d => '<div class="cal-header-cell">' + d + '</div>').join('') + '</div>';
+    html += '<div class="cal-grid">';
+
+    for (let i = 0; i < startDow; i++) html += '<div class="cal-cell empty"></div>';
+
+    for (let d = 1; d <= lastDay.getDate(); d++) {
+      const dateStr = year + '-' + String(month + 1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+      const events = examEvents[dateStr] || [];
+      const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
+      const hasExam = events.length > 0;
+      let cls = 'cal-cell';
+      if (hasExam) cls += ' has-exam';
+      if (isToday) cls += ' today';
+
+      html += '<div class="' + cls + '">';
+      html += '<div class="cal-day-num">' + d + '</div>';
+      if (events.length) {
+        html += '<div class="cal-events">';
+        events.forEach(e => {
+          html += '<div class="cal-event ' + e.cls + '">' + e.sess + ' ' + e.label + '</div>';
+        });
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+
+    const totalCells = startDow + lastDay.getDate();
+    const remainder = totalCells % 7;
+    if (remainder > 0) {
+      for (let i = 0; i < 7 - remainder; i++) html += '<div class="cal-cell empty"></div>';
+    }
+
+    html += '</div>';
+  });
+
+  document.getElementById('monthly-content').innerHTML = html;
+}
+
+renderMonthly();
 
 renderWeek();
 </script>
