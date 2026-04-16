@@ -158,10 +158,10 @@
 
 <div class="container">
   <div class="tabs">
-    <button class="tab active" onclick="showTab('calendar',this)">Calendario</button>
-    <button class="tab" onclick="showTab('study',this)">Plan de estudio</button>
-    <button class="tab" onclick="showTab('schedule',this)">Horario semanal</button>
-    <button class="tab" onclick="showTab('monthly',this)">Horario mensual</button>
+    <button class="tab active" onclick="showTab('calendar','agenda-examenes',this)">Agenda de exámenes</button>
+    <button class="tab" onclick="showTab('study','examenes-por-asignatura',this)">Exámenes por asignatura</button>
+    <button class="tab" onclick="showTab('schedule','plan-estudio-semanal',this)">Plan de estudio semanal</button>
+    <button class="tab" onclick="showTab('monthly','calendario-examenes',this)">Calendario de exámenes</button>
   </div>
 
   <!-- ══════════════════ CALENDAR ══════════════════ -->
@@ -331,8 +331,8 @@
       <div class="subject-header"><span class="subject-name">Literature in Spanish</span></div>
       <div class="priority-bar"><div class="priority-fill ph" style="width:100%"></div></div>
       <div class="exam-list">
-        <div class="exam-line"><span class="exam-line-name">Prose and Drama 11</span> — 27 abr <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 30m</span></div>
-        <div class="exam-line"><span class="exam-line-name">Poetry and Unseen 21</span> — 4 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">2h</span></div>
+        <div class="exam-line" data-date="2026-04-27"><span class="exam-line-name">Prose and Drama 11</span> — 27 abr <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 30m</span></div>
+        <div class="exam-line" data-date="2026-05-04"><span class="exam-line-name">Poetry and Unseen 21</span> — 4 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">2h</span></div>
       </div>
       <div class="study-tips">Prioridad máxima — Prose and Drama en 11 días. Esta semana: repaso de textos y análisis literario. Semana del 28: Poetry and Unseen.</div>
       <div class="chips"><span class="chip">Sem 1: Prose and Drama</span><span class="chip">Sem 2: Poetry and Unseen</span><span class="chip">1–2h diarias</span></div>
@@ -342,9 +342,9 @@
       <div class="subject-header"><span class="subject-name">Co-ordinated Sciences (Double Award)</span></div>
       <div class="priority-bar"><div class="priority-fill ph" style="width:90%"></div></div>
       <div class="exam-list">
-        <div class="exam-line"><span class="exam-line-name">Extended Theory 41</span> — 7 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">2h</span></div>
-        <div class="exam-line"><span class="exam-line-name">Alternative to Practical 61</span> — 12 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 30m</span></div>
-        <div class="exam-line"><span class="exam-line-name">Multiple Choice Extended 21</span> — 3 jun <span class="badge badge-pm">PM</span><span class="badge badge-dur">45m</span></div>
+        <div class="exam-line" data-date="2026-05-07"><span class="exam-line-name">Extended Theory 41</span> — 7 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">2h</span></div>
+        <div class="exam-line" data-date="2026-05-12"><span class="exam-line-name">Alternative to Practical 61</span> — 12 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 30m</span></div>
+        <div class="exam-line" data-date="2026-06-03"><span class="exam-line-name">Multiple Choice Extended 21</span> — 3 jun <span class="badge badge-pm">PM</span><span class="badge badge-dur">45m</span></div>
       </div>
       <div class="study-tips">Extended Theory requiere repaso amplio. Alternative to Practical más acotada. Multiple Choice en junio tiene más margen.</div>
       <div class="chips"><span class="chip">Sem 1–2: Extended Theory</span><span class="chip">Sem 3: Alt. to Practical</span><span class="chip">Junio: Multiple Choice</span></div>
@@ -354,8 +354,8 @@
       <div class="subject-header"><span class="subject-name">Mathematics A</span></div>
       <div class="priority-bar"><div class="priority-fill ph" style="width:85%"></div></div>
       <div class="exam-list">
-        <div class="exam-line"><span class="exam-line-name">1H</span> — 14 may <span class="badge badge-am">AM</span><span class="badge badge-dur">2h</span></div>
-        <div class="exam-line"><span class="exam-line-name">2H</span> — 3 jun <span class="badge badge-am">AM</span><span class="badge badge-dur">2h</span></div>
+        <div class="exam-line" data-date="2026-05-14"><span class="exam-line-name">1H</span> — 14 may <span class="badge badge-am">AM</span><span class="badge badge-dur">2h</span></div>
+        <div class="exam-line" data-date="2026-06-03"><span class="exam-line-name">2H</span> — 3 jun <span class="badge badge-am">AM</span><span class="badge badge-dur">2h</span></div>
       </div>
       <div class="study-tips">Paper 1H sin calculadora — álgebra, geometría, razonamiento. Paper 2H con calculadora — estadística, trigonometría. Past papers cronometrados.</div>
       <div class="chips"><span class="chip">Sem 2–3: Paper 1H</span><span class="chip">Sem 4–6: Paper 2H</span></div>
@@ -365,8 +365,8 @@
       <div class="subject-header"><span class="subject-name">Computer Science</span></div>
       <div class="priority-bar"><div class="priority-fill pm2" style="width:70%"></div></div>
       <div class="exam-list">
-        <div class="exam-line"><span class="exam-line-name">Paper 11 Computer Systems</span> — 13 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 45m</span></div>
-        <div class="exam-line"><span class="exam-line-name">Paper 21 Algorithms, Programming and Logic</span> — 20 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 45m</span></div>
+        <div class="exam-line" data-date="2026-05-13"><span class="exam-line-name">Paper 11 Computer Systems</span> — 13 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 45m</span></div>
+        <div class="exam-line" data-date="2026-05-20"><span class="exam-line-name">Paper 21 Algorithms, Programming and Logic</span> — 20 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 45m</span></div>
       </div>
       <div class="study-tips">Computer Systems primero: arquitectura, redes, seguridad, ética. Después Algorithms, Programming and Logic: pseudocódigo, booleana, depuración.</div>
       <div class="chips"><span class="chip">Sem 2: Computer Systems</span><span class="chip">Sem 3–4: Algorithms</span></div>
@@ -376,9 +376,9 @@
       <div class="subject-header"><span class="subject-name">English Literature + English Language B</span></div>
       <div class="priority-bar"><div class="priority-fill pm2" style="width:65%"></div></div>
       <div class="exam-list">
-        <div class="exam-line"><span class="exam-line-name">English Literature — Paper 1</span> — 11 may <span class="badge badge-am">AM</span><span class="badge badge-dur">2h</span></div>
-        <div class="exam-line"><span class="exam-line-name">English Literature — Paper 2</span> — 19 may <span class="badge badge-am">AM</span><span class="badge badge-dur">1h 30m</span></div>
-        <div class="exam-line"><span class="exam-line-name">English Language B — Paper 1</span> — 21 may <span class="badge badge-am">AM</span><span class="badge badge-dur">3h</span></div>
+        <div class="exam-line" data-date="2026-05-11"><span class="exam-line-name">English Literature — Paper 1</span> — 11 may <span class="badge badge-am">AM</span><span class="badge badge-dur">2h</span></div>
+        <div class="exam-line" data-date="2026-05-19"><span class="exam-line-name">English Literature — Paper 2</span> — 19 may <span class="badge badge-am">AM</span><span class="badge badge-dur">1h 30m</span></div>
+        <div class="exam-line" data-date="2026-05-21"><span class="exam-line-name">English Language B — Paper 1</span> — 21 may <span class="badge badge-am">AM</span><span class="badge badge-dur">3h</span></div>
       </div>
       <div class="study-tips">Literature Paper 1 primero. Language B el 21 dura 3h — practica escritura extendida. Literature Paper 2 repasa textos comparativos.</div>
       <div class="chips"><span class="chip">Sem 2: Lit Paper 1</span><span class="chip">Sem 3: Language B</span><span class="chip">Sem 4: Lit Paper 2</span></div>
@@ -388,9 +388,9 @@
       <div class="subject-header"><span class="subject-name">Spanish</span></div>
       <div class="priority-bar"><div class="priority-fill pm2" style="width:55%"></div></div>
       <div class="exam-list">
-        <div class="exam-line"><span class="exam-line-name">Reading 22</span> — 19 may <span class="badge badge-am">AM</span><span class="badge badge-dur">1h</span></div>
-        <div class="exam-line"><span class="exam-line-name">Listening (Multiple Choice) 12</span> — 21 may <span class="badge badge-am">AM</span><span class="badge badge-dur">50m</span></div>
-        <div class="exam-line"><span class="exam-line-name">Writing 42</span> — 21 may <span class="badge badge-am">AM</span><span class="badge badge-dur">1h</span></div>
+        <div class="exam-line" data-date="2026-05-19"><span class="exam-line-name">Reading 22</span> — 19 may <span class="badge badge-am">AM</span><span class="badge badge-dur">1h</span></div>
+        <div class="exam-line" data-date="2026-05-21"><span class="exam-line-name">Listening (Multiple Choice) 12</span> — 21 may <span class="badge badge-am">AM</span><span class="badge badge-dur">50m</span></div>
+        <div class="exam-line" data-date="2026-05-21"><span class="exam-line-name">Writing 42</span> — 21 may <span class="badge badge-am">AM</span><span class="badge badge-dur">1h</span></div>
       </div>
       <div class="study-tips">Reading el 19, Listening y Writing el 21 (ambos AM). Practica comprensión auditiva con grabaciones y redacción cronometrada.</div>
       <div class="chips"><span class="chip">Sem 3: Reading</span><span class="chip">Sem 4: Listening + Writing</span></div>
@@ -400,8 +400,8 @@
       <div class="subject-header"><span class="subject-name">Business</span></div>
       <div class="priority-bar"><div class="priority-fill pl" style="width:40%"></div></div>
       <div class="exam-list">
-        <div class="exam-line"><span class="exam-line-name">Paper 1</span> — 11 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 30m</span></div>
-        <div class="exam-line"><span class="exam-line-name">Paper 2</span> — 21 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 30m</span></div>
+        <div class="exam-line" data-date="2026-05-11"><span class="exam-line-name">Paper 1</span> — 11 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 30m</span></div>
+        <div class="exam-line" data-date="2026-05-21"><span class="exam-line-name">Paper 2</span> — 21 may <span class="badge badge-pm">PM</span><span class="badge badge-dur">1h 30m</span></div>
       </div>
       <div class="study-tips">Ambos papers en sesión PM. Repasa conceptos de marketing, finanzas y operaciones. Estructura respuestas con casos prácticos.</div>
       <div class="chips"><span class="chip">Sem 2: Paper 1</span><span class="chip">Sem 4: Paper 2</span></div>
@@ -411,8 +411,8 @@
       <div class="subject-header"><span class="subject-name">French</span></div>
       <div class="priority-bar"><div class="priority-fill pl" style="width:30%"></div></div>
       <div class="exam-list">
-        <div class="exam-line"><span class="exam-line-name">Paper 1</span> — 20 may <span class="badge badge-am">AM</span><span class="badge badge-dur">35m</span></div>
-        <div class="exam-line"><span class="exam-line-name">Paper 2</span> — 20 may <span class="badge badge-am">AM</span><span class="badge badge-dur">1h 45m</span></div>
+        <div class="exam-line" data-date="2026-05-20"><span class="exam-line-name">Paper 1</span> — 20 may <span class="badge badge-am">AM</span><span class="badge badge-dur">35m</span></div>
+        <div class="exam-line" data-date="2026-05-20"><span class="exam-line-name">Paper 2</span> — 20 may <span class="badge badge-am">AM</span><span class="badge badge-dur">1h 45m</span></div>
       </div>
       <div class="study-tips">Ambos papers el mismo día en AM. Paper 1 muy corto (35m), Paper 2 más extenso. Vocabulario temático y gramática en semanas 3–4.</div>
       <div class="chips"><span class="chip">Sem 3–4: Repaso intensivo</span></div>
@@ -463,12 +463,40 @@
 </div>
 
 <script>
-function showTab(id, btn) {
+const hashToPanel = {
+  'agenda-examenes': 'calendar',
+  'examenes-por-asignatura': 'study',
+  'plan-estudio-semanal': 'schedule',
+  'calendario-examenes': 'monthly'
+};
+const panelToHash = {
+  'calendar': 'agenda-examenes',
+  'study': 'examenes-por-asignatura',
+  'schedule': 'plan-estudio-semanal',
+  'monthly': 'calendario-examenes'
+};
+
+function showTab(id, hash, btn) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
+  history.replaceState(null, '', '#' + hash);
 }
+
+function initFromHash() {
+  const hash = window.location.hash.replace('#', '');
+  const panelId = hashToPanel[hash];
+  if (panelId) {
+    const btn = Array.from(document.querySelectorAll('.tab')).find(
+      b => b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + panelId + "'")
+    );
+    showTab(panelId, hash, btn);
+  }
+}
+
+window.addEventListener('hashchange', initFromHash);
+initFromHash();
 
 function updateDaysLeft() {
   const today = new Date();
@@ -716,7 +744,51 @@ const weeks = [
   }
 ];
 
-let currentWeek = 0;
+const weekStartDates = [
+  '2026-04-16', '2026-04-21', '2026-04-28',
+  '2026-05-04', '2026-05-11', '2026-05-18',
+  '2026-05-25', '2026-06-01'
+];
+
+function getCurrentWeek() {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  let idx = 0;
+  for (let i = 0; i < weekStartDates.length; i++) {
+    const p = weekStartDates[i].split('-');
+    const d = new Date(+p[0], +p[1]-1, +p[2]);
+    if (today >= d) idx = i;
+  }
+  return Math.min(idx, weeks.length - 1);
+}
+
+let currentWeek = getCurrentWeek();
+
+function updateStudyPlan() {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  document.querySelectorAll('#study .exam-line[data-date]').forEach(el => {
+    const p = el.dataset.date.split('-');
+    const examDate = new Date(+p[0], +p[1]-1, +p[2]);
+    if (examDate < today) {
+      el.style.opacity = '0.45';
+      el.style.textDecoration = 'line-through';
+    }
+  });
+  document.querySelectorAll('#study .subject-card').forEach(card => {
+    const lines = card.querySelectorAll('.exam-line[data-date]');
+    const allDone = lines.length > 0 && Array.from(lines).every(el => {
+      const p = el.dataset.date.split('-');
+      return new Date(+p[0], +p[1]-1, +p[2]) < today;
+    });
+    if (allDone) {
+      card.style.opacity = '0.5';
+      card.querySelector('.subject-name').style.textDecoration = 'line-through';
+    }
+  });
+}
+
+updateStudyPlan();
 
 const badgeLabels = { 'b-lit':'Lit','b-sci':'Sci','b-mat':'Maths','b-cs':'CS','b-eng':'English','b-esp':'Spanish','b-bus':'Business','b-fr':'French','b-rest':'—' };
 
